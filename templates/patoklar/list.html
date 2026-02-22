@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+{% block title %}Patoklar{% endblock %}
+{% block breadcrumb %}
+<li><a href="/">Bosh sahifa</a></li>
+<li><span class="sep">›</span></li>
+<li><span class="current">Patoklar</span></li>
+{% endblock %}
+
+{% block content %}
+<div class="ph">
+    <div>
+        <div class="ph-title">Patoklar</div>
+        <div class="ph-sub">Barcha patok­laringiz ro'yxati</div>
+    </div>
+    <div class="ph-actions">
+        <form method="get" style="display:flex;">
+            <div class="search-wrap">
+                <input class="search-input" name="q" value="{{ q }}" placeholder="Patok nomini qidiring…">
+                {% if q %}<button type="button" class="search-clear" onclick="location.href='/patoklar/'">✕</button>{% endif %}
+                <button class="search-btn" type="submit">🔍</button>
+            </div>
+        </form>
+        <a href="/patoklar/create/" class="btn btn-gold">+ Yangi patok</a>
+    </div>
+</div>
+
+{% if q %}
+<p style="font-size:.84rem;color:var(--muted);margin-bottom:1rem;">
+    «<strong>{{ q }}</strong>» bo'yicha {{ patoklar.count }} ta natija
+    — <a href="/patoklar/" style="color:var(--gold);">tozalash</a>
+</p>
+{% endif %}
+
+{% if patoklar %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;">
+    {% for p in patoklar %}
+    <div class="card">
+        <div class="card-head">
+            <span>📦 {{ p.nomi }}</span>
+            <span class="badge badge-gold">{{ p.guruhlar_soni }} guruh</span>
+        </div>
+        <div class="card-body">
+            <p style="font-size:.84rem;color:var(--muted);margin-bottom:.75rem;">
+                👥 {{ p.talabalar_soni }} o'quvchi
+                {% if p.tavsif %} · {{ p.tavsif|truncatechars:60 }}{% endif %}
+            </p>
+            <div style="display:flex;gap:.5rem;">
+                <a href="/patoklar/{{ p.pk }}/" class="btn btn-primary btn-sm">Ko'rish</a>
+                <a href="/patoklar/{{ p.pk }}/edit/" class="btn btn-ghost btn-sm">Tahrirlash</a>
+                <a href="/patoklar/{{ p.pk }}/delete/" class="btn btn-danger btn-sm">O'chirish</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="empty">
+        <div class="empty-icon">📦</div>
+        <div class="empty-title">{% if q %}Natija topilmadi{% else %}Hali patok yaratilmagan{% endif %}</div>
+        {% if not q %}<a href="/patoklar/create/" class="btn btn-primary" style="margin-top:.75rem;">Patok yaratish</a>{% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

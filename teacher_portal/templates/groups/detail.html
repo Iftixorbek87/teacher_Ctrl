@@ -1,0 +1,472 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ group.name }} — O'qituvchi Portali{% endblock %}
+
+{% block extra_css %}
+<style>
+.group-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e4d7a 100%);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    color: var(--bg);
+    border-bottom: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.group-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.group-hero-meta {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+}
+
+.group-hero-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Scrollable table wrapper */
+.table-scroll-wrap {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: auto;
+    max-height: 80vh;
+}
+
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    table-layout: fixed;
+    min-width: 800px;
+}
+
+/* Sticky header */
+.tasks-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--primary);
+    color: var(--bg);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* Sticky first column (name) */
+.tasks-table thead th:first-child,
+.tasks-table tbody td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    text-align: left;
+}
+
+.tasks-table thead th:first-child {
+    z-index: 15;
+    width: 200px;
+    min-width: 200px;
+    border-right: 2px solid var(--accent);
+}
+
+.tasks-table tbody td:first-child {
+    background: #f5f0e8;
+    border-right: 2px solid var(--border);
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+/* Row styles */
+.tasks-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+
+.tasks-table tbody tr:hover { background: rgba(200,146,42,0.05); }
+.tasks-table tbody tr:hover .sticky-name { background: #ede8de; }
+
+.tasks-table tbody tr.graduated { background: rgba(45,122,79,0.05); }
+.tasks-table tbody tr.graduated .sticky-name { background: #edf7f1; }
+
+/* Task cells */
+.tasks-table td.task-cell {
+    text-align: center;
+    padding: 0.35rem 0.25rem;
+    border-right: 1px solid rgba(212,201,176,0.4);
+    width: 36px;
+    min-width: 36px;
+}
+
+/* Checkbox styling */
+.task-checkbox {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: white;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.task-checkbox:hover { border-color: var(--accent); background: rgba(200,146,42,0.08); }
+
+.task-checkbox:checked {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.task-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Progress cell */
+.progress-cell {
+    padding: 0.5rem 0.75rem;
+    min-width: 130px;
+    width: 130px;
+    position: sticky;
+    right: 0;
+    background: #f5f0e8;
+    border-left: 2px solid var(--border);
+    z-index: 4;
+}
+
+.tasks-table thead th.progress-header {
+    right: 0;
+    background: #2d5986;
+    border-left: 2px solid var(--accent);
+    z-index: 16;
+    width: 130px;
+    min-width: 130px;
+}
+
+.progress-count {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 3px;
+}
+
+.mini-progress {
+    height: 5px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.mini-progress-fill.full { background: var(--success); }
+
+.grad-badge {
+    display: block;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* Name cell actions */
+.name-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.student-name-text { flex: 1; }
+
+.name-actions {
+    display: none;
+    gap: 0.25rem;
+}
+
+.tasks-table tbody tr:hover .name-actions { display: flex; }
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.icon-btn:hover { background: var(--border); color: var(--primary); }
+.icon-btn.del:hover { background: #fde8ea; color: var(--danger); }
+
+/* Header row number */
+.tasks-table thead th.task-num {
+    width: 36px;
+    min-width: 36px;
+    font-size: 0.65rem;
+    padding: 0.5rem 0.2rem;
+}
+
+/* Add student row */
+.add-student-row td {
+    padding: 0.8rem 1rem;
+    background: rgba(200,146,42,0.04);
+    border-top: 2px dashed var(--border);
+}
+
+/* Toolbar */
+.table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border);
+    border-radius: 8px 8px 0 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.toolbar-info {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.toolbar-info strong { color: var(--primary); }
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary);
+    color: var(--bg);
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border-left: 3px solid var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--success); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="group-hero">
+    <div>
+        <div class="group-hero-title">{{ group.name }}</div>
+        <div class="group-hero-meta">
+            👥 {{ group.students.count }} o'quvchi &nbsp;·&nbsp; 
+            📋 {{ total_tasks }} vazifa &nbsp;·&nbsp;
+            O'qituvchi: {{ request.user.get_full_name|default:request.user.username }}
+        </div>
+    </div>
+    <div class="group-hero-actions">
+        <a href="/students/add/{{ group.pk }}/" class="btn btn-accent btn-sm">+ O'quvchi qo'shish</a>
+        <a href="/groups/{{ group.pk }}/edit/" class="btn btn-outline btn-sm" style="color:var(--bg);border-color:rgba(245,240,232,0.4);">Tahrirlash</a>
+        <a href="/groups/" class="btn btn-sm" style="background:rgba(245,240,232,0.1);color:var(--bg);">← Orqaga</a>
+    </div>
+</div>
+
+{% if students %}
+<div class="table-toolbar">
+    <div class="toolbar-info">
+        Jami <strong>{{ students.count }}</strong> o'quvchi &nbsp;|&nbsp;
+        Har bir o'quvchi <strong>{{ total_tasks }}</strong> ta vazifa bajarishi kerak
+    </div>
+    <div style="font-size:0.8rem;color:var(--text-muted);">
+        ✓ belgisini bosib vazifani belgilang
+    </div>
+</div>
+
+<div class="table-scroll-wrap" style="border-radius: 0 0 8px 8px;">
+    <table class="tasks-table" id="tasksTable">
+        <thead>
+            <tr>
+                <th>F.I.SH</th>
+                {% for i in task_range %}
+                <th class="task-num">{{ i }}</th>
+                {% endfor %}
+                <th class="progress-header">Natija</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            {% with completed=student.completed_tasks_count total=total_tasks %}
+            <tr class="{% if student.is_graduated %}graduated{% endif %}" 
+                data-student="{{ student.pk }}"
+                data-total="{{ total_tasks }}">
+                <td class="sticky-name">
+                    <div class="name-cell">
+                        <span class="student-name-text">
+                            {% if student.is_graduated %}🏆 {% endif %}{{ student.full_name }}
+                        </span>
+                        <span class="name-actions">
+                            <a href="/students/{{ student.pk }}/" class="icon-btn" title="Batafsil">👁</a>
+                            <a href="/students/{{ student.pk }}/edit/" class="icon-btn" title="Tahrirlash">✏️</a>
+                            <a href="/students/{{ student.pk }}/delete/" class="icon-btn del" title="O'chirish">🗑</a>
+                        </span>
+                    </div>
+                </td>
+                {% for task in student.task_completions.all %}
+                <td class="task-cell">
+                    <input type="checkbox" 
+                           class="task-checkbox"
+                           data-student="{{ student.pk }}"
+                           data-task="{{ task.task_number }}"
+                           {% if task.completed %}checked{% endif %}>
+                </td>
+                {% endfor %}
+                <td class="progress-cell">
+                    <div class="progress-count" id="count-{{ student.pk }}">
+                        {{ completed }}/{{ total }}
+                    </div>
+                    <div class="mini-progress">
+                        <div class="mini-progress-fill {% if student.is_graduated %}full{% endif %}"
+                             id="bar-{{ student.pk }}"
+                             style="width: {{ student.progress_percent }}%"></div>
+                    </div>
+                    {% if student.is_graduated %}
+                    <span class="grad-badge" id="grad-{{ student.pk }}">✓ Bitirdi</span>
+                    {% else %}
+                    <span class="grad-badge" id="grad-{{ student.pk }}" style="display:none;color:var(--success);">✓ Bitirdi</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="card">
+    <div style="text-align:center;padding:3rem 2rem;color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:1rem;opacity:0.4;">👥</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--primary);margin-bottom:0.5rem;">
+            Guruhda o'quvchilar yo'q
+        </div>
+        <p style="margin-bottom:1.5rem;">Birinchi o'quvchini qo'shing</p>
+        <a href="/students/add/{{ group.pk }}/" class="btn btn-primary">O'quvchi qo'shish</a>
+    </div>
+</div>
+{% endif %}
+
+<div class="toast" id="toast"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const TOGGLE_URL = '/students/toggle-task/';
+const CSRF_TOKEN = '{{ csrf_token }}';
+const TOTAL_TASKS = {{ total_tasks }};
+
+function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = 'toast'; }, 2000);
+}
+
+document.querySelectorAll('.task-checkbox').forEach(cb => {
+    cb.addEventListener('change', async function() {
+        const studentId = this.dataset.student;
+        const taskNum = parseInt(this.dataset.task);
+        const checked = this.checked;
+        
+        // Optimistic update
+        this.disabled = true;
+        
+        try {
+            const resp = await fetch(TOGGLE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF_TOKEN,
+                },
+                body: JSON.stringify({ student_id: studentId, task_number: taskNum })
+            });
+            
+            const data = await resp.json();
+            
+            if (data.success) {
+                // Update progress display
+                const countEl = document.getElementById('count-' + studentId);
+                const barEl = document.getElementById('bar-' + studentId);
+                const gradEl = document.getElementById('grad-' + studentId);
+                const row = document.querySelector(`tr[data-student="${studentId}"]`);
+                
+                countEl.textContent = data.completed_count + '/' + TOTAL_TASKS;
+                barEl.style.width = data.progress + '%';
+                
+                if (data.is_graduated) {
+                    barEl.classList.add('full');
+                    gradEl.style.display = 'block';
+                    row.classList.add('graduated');
+                    showToast('🏆 ' + '{{ group.name }}' + ' — Barakalla!', 'success');
+                } else {
+                    barEl.classList.remove('full');
+                    gradEl.style.display = 'none';
+                    row.classList.remove('graduated');
+                    if (checked) showToast('✓ Vazifa belgilandi');
+                    else showToast('Vazifa olib tashlandi');
+                }
+            } else {
+                this.checked = !checked;
+                showToast('Xatolik yuz berdi');
+            }
+        } catch(e) {
+            this.checked = !checked;
+            showToast('Xatolik yuz berdi');
+        } finally {
+            this.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

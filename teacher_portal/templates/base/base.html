@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}O'qituvchi Portali{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a5c;
+            --primary-light: #2d5986;
+            --accent: #c8922a;
+            --accent-light: #e8b84b;
+            --success: #2d7a4f;
+            --success-light: #e8f5ee;
+            --danger: #8b2635;
+            --bg: #f5f0e8;
+            --bg-white: #fffef9;
+            --text: #1a1a2e;
+            --text-muted: #6b6b8a;
+            --border: #d4c9b0;
+            --shadow: 0 4px 20px rgba(26,58,92,0.08);
+            --shadow-hover: 0 8px 32px rgba(26,58,92,0.14);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            background: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--bg);
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand span {
+            color: var(--accent-light);
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(245,240,232,0.85);
+            text-decoration: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        .nav-link:hover {
+            color: var(--bg);
+            background: rgba(200,146,42,0.2);
+        }
+
+        .nav-user {
+            color: var(--accent-light);
+            font-size: 0.85rem;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid rgba(200,146,42,0.4);
+            border-radius: 4px;
+        }
+
+        .btn-logout {
+            background: var(--accent);
+            color: var(--primary);
+            font-weight: 700;
+            padding: 0.35rem 0.9rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover { background: var(--accent-light); }
+
+        /* ---- LAYOUT ---- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ---- BUTTONS ---- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.2rem;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+        }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-accent:hover { background: var(--accent-light); color: var(--primary); }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover { background: #3a9662; }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover { background: #a83040; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: var(--bg); }
+
+        .btn-sm {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* ---- CARDS ---- */
+        .card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--primary);
+            color: var(--bg);
+            padding: 1rem 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .card-body { padding: 1.5rem; }
+
+        /* ---- FORMS ---- */
+        .form-group { margin-bottom: 1.25rem; }
+
+        .form-label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            background: var(--bg-white);
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(200,146,42,0.12);
+        }
+
+        /* ---- ALERTS ---- */
+        .messages { list-style: none; margin-bottom: 1.5rem; }
+        .message {
+            padding: 0.85rem 1.2rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-left: 4px solid;
+        }
+        .message.success { background: var(--success-light); color: var(--success); border-color: var(--success); }
+        .message.error { background: #fdf0f2; color: var(--danger); border-color: var(--danger); }
+        .message.warning { background: #fdf8e8; color: #7a5c1a; border-color: var(--accent); }
+
+        /* ---- BADGE ---- */
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .badge-success { background: var(--success-light); color: var(--success); }
+        .badge-warning { background: #fdf8e8; color: #7a5c1a; }
+        .badge-primary { background: #e8f0f8; color: var(--primary); }
+
+        /* ---- PROGRESS ---- */
+        .progress-bar-wrap {
+            background: #e4ddd0;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
+            transition: width 0.5s ease;
+        }
+        .progress-bar-fill.full { background: linear-gradient(90deg, var(--success) 0%, #5dba85 100%); }
+
+        /* ---- DECORATIVE ---- */
+        .ornament {
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin: 0 0.3rem;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        ✦ O'qituvchi <span>Portali</span>
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="/" class="nav-link">Bosh sahifa</a></li>
+        <li><a href="/groups/" class="nav-link">Guruhlar</a></li>
+        {% if user.is_staff %}
+        <li><a href="/admin/" class="nav-link">Admin panel</a></li>
+        {% endif %}
+        <li><span class="nav-user">👤 {{ user.get_full_name|default:user.username }}</span></li>
+        <li><a href="/logout/" class="btn-logout">Chiqish</a></li>
+    </ul>
+</nav>
+{% endif %}
+
+<main>
+    <div class="container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<footer>
+    <span class="ornament">✦</span>
+    O'qituvchi Portali &mdash; Vazifalar kuzatuvi tizimi
+    <span class="ornament">✦</span>
+</footer>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

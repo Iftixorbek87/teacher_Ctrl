@@ -1,0 +1,76 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ talaba.ism_familya }}{% endblock %}
+{% block breadcrumb %}
+<li><a href="/">Bosh sahifa</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/patoklar/{{ talaba.guruh.patok.pk }}/">{{ talaba.guruh.patok.nomi }}</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/guruhlar/{{ talaba.guruh.pk }}/">{{ talaba.guruh.nomi }}</a></li>
+<li><span class="sep">›</span></li>
+<li><span class="current">{{ talaba.ism_familya }}</span></li>
+{% endblock %}
+
+{% block content %}
+<div class="ph">
+    <div>
+        <div class="ph-title">{{ talaba.ism_familya }}</div>
+        <div class="ph-sub">{{ talaba.guruh.patok.nomi }} / {{ talaba.guruh.nomi }}</div>
+    </div>
+    <div class="ph-actions">
+        <a href="/talabalar/{{ talaba.pk }}/edit/" class="btn btn-ghost btn-sm">✏ Tahrirlash</a>
+        <a href="/guruhlar/{{ talaba.guruh.pk }}/" class="btn btn-outline btn-sm">← Guruhga qaytish</a>
+    </div>
+</div>
+
+<!-- Progress summary -->
+<div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-head">Umumiy natija</div>
+    <div class="card-body">
+        <div style="display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap;">
+            <div style="text-align:center;">
+                <div style="font-family:'Playfair Display',serif;font-size:3rem;color:var(--ink);font-weight:700;line-height:1;">{{ bajarilgan }}</div>
+                <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:.2rem;">Bajarilgan</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-family:'Playfair Display',serif;font-size:3rem;color:var(--muted);font-weight:700;line-height:1;">{{ jami }}</div>
+                <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:.2rem;">Jami</div>
+            </div>
+            <div style="flex:1;min-width:200px;">
+                <div style="display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:.4rem;">
+                    <span>Jarayon</span>
+                    <strong style="color:var(--ink);">{{ foiz }}%</strong>
+                </div>
+                <div class="pbar-wrap" style="height:10px;">
+                    <div class="pbar-fill {% if foiz == 100 %}full{% endif %}" style="width:{{ foiz }}%;"></div>
+                </div>
+                {% if foiz == 100 %}
+                <div style="color:var(--green);font-weight:700;margin-top:.5rem;font-size:.9rem;">🏆 Barcha vazifalarni bajardi!</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task grid -->
+<div class="card">
+    <div class="card-head">Vazifalar holati</div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:.5rem;">
+            {% for v in vazifalar %}
+            <div style="
+                text-align:center;
+                padding:.45rem .3rem;
+                border-radius:5px;
+                border:1.5px solid {% if v.bajarildi %}var(--green){% else %}var(--rule){% endif %};
+                background:{% if v.bajarildi %}var(--green-pale){% else %}var(--cream){% endif %};
+            ">
+                <div style="font-weight:700;font-size:.72rem;color:{% if v.bajarildi %}var(--green){% else %}var(--muted){% endif %};">
+                    {{ v.vazifa_raqam }}
+                </div>
+                <div style="font-size:.9rem;">{% if v.bajarildi %}✓{% else %}·{% endif %}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

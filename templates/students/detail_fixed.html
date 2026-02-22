@@ -1,0 +1,167 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ student.full_name }}{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/student_tasks.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="student-container" data-student-id="{{ student.id }}">
+    <div class="page-header">
+    <div>
+        <div class="page-title">{{ student.full_name }}</div>
+        <div class="page-subtitle">{{ student.group.name }}</div>
+    </div>
+    <div style="display:flex;gap:0.5rem;">
+        <a href="/students/{{ student.pk }}/edit/" class="btn btn-outline btn-sm">Tahrirlash</a>
+        <a href="/groups/{{ student.group.pk }}/" class="btn btn-primary btn-sm">← Guruhga qaytish</a>
+    </div>
+</div>
+
+<!-- Progress card -->
+<div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">Umumiy natija</div>
+    <div class="card-body">
+        <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+            <div style="text-align:center;">
+                <div class="completed-count" style="font-family:'Playfair Display',serif;font-size:3rem;color:var(--primary);font-weight:700;line-height:1;">{{ completed }}</div>
+                <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);">Bajarilgan</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-family:'Playfair Display',serif;font-size:3rem;color:var(--text-muted);font-weight:700;line-height:1;">{{ total }}</div>
+                <div style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);">Jami</div>
+            </div>
+            <div style="flex:1;min-width:200px;">
+                <div class="progress-text" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;">{{ progress }}% bajarildi</div>
+                <div class="progress-bar-wrap" style="height:12px;">
+                    <div class="progress-bar-fill {% if progress == 100 %}full{% endif %}" style="width:{{ progress }}%;"></div>
+                </div>
+                {% if progress == 100 %}
+                <div class="completion-message" style="color:var(--success);font-weight:700;margin-top:0.5rem;font-size:0.9rem;">🏆 Barcha vazifalarni bajardi!</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks grid -->
+<div class="card">
+    <div class="card-header">Vazifalar holati</div>
+    <div class="card-body">
+        <div class="task-grid">
+            {% for task in tasks %}
+            <div class="task-item {% if task.completed %}completed{% endif %}" title="Vazifa #{{ task.task_number }}" data-task-id="{{ task.id }}">
+                <div class="task-number">{{ task.task_number }}</div>
+                <div class="task-status">
+                    {% if task.completed %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {% else %}
+                    <div class="task-pending"></div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <style>
+            .task-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .task-item {
+                aspect-ratio: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 3px solid #e2e8f0;
+                border-radius: 15px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                padding: 15px;
+                min-height: 100px;
+            }
+            
+            .task-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                border-color: var(--primary);
+            }
+            
+            .task-item.completed {
+                background-color: #f0fdf4;
+                border-color: #86efac;
+            }
+            
+            .task-number {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #1f2937;
+                margin-bottom: 10px;
+                text-shadow: 0 2px 2px rgba(0,0,0,0.05);
+            }
+            
+            .task-status {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                margin-top: 5px;
+            }
+            
+            .task-status svg {
+                color: #10b981;
+                width: 24px;
+                height: 24px;
+                margin-top: 4px;
+            }
+            
+            .task-pending {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: #9ca3af;
+                margin-top: 8px;
+            }
+            
+            .task-item.completed .task-number {
+                color: #10b981;
+                font-weight: 700;
+            }
+            
+            @media (max-width: 768px) {
+                .task-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                    gap: 12px;
+                    padding: 15px;
+                }
+                
+                .task-number {
+                    font-size: 1.5rem;
+                }
+                
+                .task-item {
+                    border-width: 1.5px;
+                    border-radius: 8px;
+                }
+            }
+        </style>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/student_tasks.js' %}"></script>
+{% endblock %}

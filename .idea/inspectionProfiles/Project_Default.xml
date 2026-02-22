@@ -1,0 +1,52 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="asgiref" />
+          <option value="sqlparse" />
+          <option value="tzdata" />
+          <option value="Django" />
+          <option value="psycopg2" />
+          <option value="appdirs" />
+          <option value="certifi" />
+          <option value="distlib" />
+          <option value="django-mathfilters" />
+          <option value="filelock" />
+          <option value="pipenv" />
+          <option value="platformdirs" />
+          <option value="psycopg2-binary" />
+          <option value="pytz" />
+          <option value="six" />
+          <option value="typing-extensions" />
+          <option value="virtualenv" />
+          <option value="virtualenv-clone" />
+          <option value="zipp" />
+          <option value="gunicorn" />
+          <option value="Pillow" />
+          <option value="async-timeout" />
+          <option value="django-admin-notification" />
+          <option value="django-templated-mail" />
+          <option value="generics" />
+          <option value="redis" />
+          <option value="djoser" />
+          <option value="celery" />
+          <option value="django-cors-headers" />
+          <option value="whitenoise" />
+          <option value="pytest" />
+          <option value="pytest-django" />
+          <option value="pytest-cov" />
+          <option value="factory-boy" />
+          <option value="requests" />
+          <option value="boto3" />
+          <option value="django-environ" />
+          <option value="django-filter" />
+          <option value="django-debug-toolbar" />
+          <option value="djangorestframework" />
+          <option value="python-decouple" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

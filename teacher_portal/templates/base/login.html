@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish — O'qituvchi Portali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a5c;
+            --accent: #c8922a;
+            --accent-light: #e8b84b;
+            --bg: #f5f0e8;
+            --bg-white: #fffef9;
+            --border: #d4c9b0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(200,146,42,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(45,89,134,0.3) 0%, transparent 50%);
+        }
+
+        .login-wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            padding: 1rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--bg);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .login-logo span { color: var(--accent-light); }
+
+        .login-tagline {
+            color: rgba(245,240,232,0.6);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1.2rem 0;
+        }
+        .divider-line { flex: 1; height: 1px; background: var(--accent); opacity: 0.4; }
+        .divider-icon { color: var(--accent); font-size: 0.9rem; }
+
+        .login-card {
+            background: var(--bg-white);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            background: var(--bg);
+            color: #1a1a2e;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-white);
+            box-shadow: 0 0 0 3px rgba(200,146,42,0.12);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            border-bottom: 3px solid var(--accent);
+        }
+        .btn-login:hover { background: #2d5986; transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+
+        .error-list { list-style: none; }
+        .error-item {
+            background: #fdf0f2;
+            color: #8b2635;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #8b2635;
+        }
+
+        .login-footer {
+            text-align: center;
+            color: rgba(245,240,232,0.45);
+            font-size: 0.75rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrap">
+        <div class="login-header">
+            <div class="login-logo">✦ O'qituvchi <span>Portali</span></div>
+            <div class="login-tagline">Vazifalar kuzatuvi tizimi</div>
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-icon">◆</div>
+                <div class="divider-line"></div>
+            </div>
+        </div>
+
+        <div class="login-card">
+            <div class="form-title">Tizimga kirish</div>
+
+            {% if form.errors %}
+            <ul class="error-list">
+                <li class="error-item">Foydalanuvchi nomi yoki parol noto'g'ri. Qayta urinib ko'ring.</li>
+            </ul>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label">Foydalanuvchi nomi</label>
+                    <input type="text" name="username" class="form-input" placeholder="username" autofocus required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parol</label>
+                    <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn-login">Kirish &rarr;</button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            © O'qituvchi Portali — Barcha huquqlar himoyalangan
+        </div>
+    </div>
+</body>
+</html>

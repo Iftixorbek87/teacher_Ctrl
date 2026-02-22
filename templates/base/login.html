@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish — O'qituvchi Portali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink:#1c2b3a; --gold:#b8872a; --gold-l:#d4a84b; --parchment:#f8f4ec; --rule:#ddd5c0; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Source Sans 3',sans-serif;background:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+        body::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 15% 25%,rgba(184,135,42,.1) 0%,transparent 55%),radial-gradient(circle at 85% 75%,rgba(46,69,96,.4) 0%,transparent 55%);}
+
+        .wrap{position:relative;z-index:1;width:100%;max-width:400px;padding:1rem;}
+
+        .logo{text-align:center;margin-bottom:2rem;}
+        .logo-text{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--parchment);}
+        .logo-text em{color:var(--gold-l);font-style:normal}
+        .logo-tag{color:rgba(248,244,236,.45);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.2rem;}
+        .logo-rule{display:flex;align-items:center;gap:.6rem;margin-top:1rem;}
+        .logo-rule-line{flex:1;height:1px;background:rgba(184,135,42,.3);}
+        .logo-rule-diamond{color:var(--gold);font-size:.85rem;}
+
+        .card{background:var(--parchment);border-radius:8px;padding:2.25rem;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+        .card-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--ink);text-align:center;margin-bottom:1.5rem;font-weight:700;}
+
+        .fg{margin-bottom:1.1rem;}
+        .label{display:block;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#2e4560;margin-bottom:.35rem;}
+        .inp{width:100%;padding:.7rem 1rem;border:1.5px solid var(--rule);border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:.95rem;background:#fffef9;color:var(--ink);}
+        .inp:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,135,42,.12);}
+
+        .err{background:#fdf0f2;color:#8b2230;padding:.6rem 1rem;border-radius:6px;font-size:.84rem;margin-bottom:1rem;border-left:3px solid #8b2230;}
+
+        .submit{width:100%;padding:.8rem;background:var(--ink);color:var(--parchment);border:none;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.05em;cursor:pointer;border-bottom:3px solid var(--gold);transition:background .18s;}
+        .submit:hover{background:#2e4560;}
+
+        .foot{text-align:center;color:rgba(248,244,236,.35);font-size:.75rem;margin-top:1.5rem;}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="logo">
+        <div class="logo-text">✦ O'qituvchi <em>Portali</em></div>
+        <div class="logo-tag">Vazifalar kuzatuvi tizimi</div>
+        <div class="logo-rule">
+            <div class="logo-rule-line"></div>
+            <div class="logo-rule-diamond">◆</div>
+            <div class="logo-rule-line"></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Tizimga kirish</div>
+        {% if form.errors %}
+        <div class="err">Foydalanuvchi nomi yoki parol noto'g'ri.</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="fg">
+                <label class="label">Foydalanuvchi nomi</label>
+                <input type="text" name="username" class="inp" placeholder="username" autofocus required>
+            </div>
+            <div class="fg">
+                <label class="label">Parol</label>
+                <input type="password" name="password" class="inp" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="submit">Kirish →</button>
+        </form>
+    </div>
+    <div class="foot">© O'qituvchi Portali</div>
+</div>
+</body>
+</html>

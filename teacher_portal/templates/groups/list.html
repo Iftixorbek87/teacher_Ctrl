@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% block title %}Guruhlar{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <div class="page-title">Guruhlar</div>
+        <div class="page-subtitle">Barcha guruhlaringiz ro'yxati</div>
+    </div>
+    <a href="/groups/create/" class="btn btn-accent">+ Yangi guruh</a>
+</div>
+
+{% if groups %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+    {% for group in groups %}
+    <div class="card">
+        <div class="card-header">{{ group.name }}</div>
+        <div class="card-body">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;font-size:0.85rem;color:var(--text-muted);">
+                <span>👥 {{ group.get_student_count }} o'quvchi</span>
+                <span>📋 {{ group.total_tasks }} vazifa</span>
+            </div>
+            {% if group.description %}
+            <p style="font-size:0.85rem;color:var(--text-muted);font-style:italic;margin-bottom:1rem;">{{ group.description|truncatechars:80 }}</p>
+            {% endif %}
+            <div style="display:flex;gap:0.5rem;">
+                <a href="/groups/{{ group.pk }}/" class="btn btn-primary btn-sm">Ko'rish</a>
+                <a href="/groups/{{ group.pk }}/edit/" class="btn btn-outline btn-sm">Tahrirlash</a>
+                <a href="/groups/{{ group.pk }}/delete/" class="btn btn-danger btn-sm">O'chirish</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div style="text-align:center;padding:3rem;color:var(--text-muted);">
+        <div style="font-size:2rem;margin-bottom:1rem;">📚</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--primary);margin-bottom:1rem;">Hali guruh yaratilmagan</div>
+        <a href="/groups/create/" class="btn btn-primary">Guruh yaratish</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

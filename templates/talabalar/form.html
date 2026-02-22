@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}
+<li><a href="/">Bosh sahifa</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/patoklar/{{ guruh.patok.pk }}/">{{ guruh.patok.nomi }}</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/guruhlar/{{ guruh.pk }}/">{{ guruh.nomi }}</a></li>
+<li><span class="sep">›</span></li>
+<li><span class="current">{{ title }}</span></li>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:480px;margin:0 auto;">
+    <div class="ph">
+        <div class="ph-title">{{ title }}</div>
+        <a href="/guruhlar/{{ guruh.pk }}/" class="btn btn-ghost btn-sm">← Orqaga</a>
+    </div>
+    <div class="card">
+        <div class="card-head">📚 {{ guruh.nomi }}</div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% for f in form %}
+                <div class="form-group">
+                    <label class="form-label">{{ f.label }}</label>
+                    {{ f }}
+                    {% if f.errors %}<div style="color:var(--red);font-size:.8rem;margin-top:.25rem;">{{ f.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+                <div style="display:flex;gap:.6rem;margin-top:1.25rem;">
+                    <button type="submit" class="btn btn-primary">Saqlash</button>
+                    <a href="/guruhlar/{{ guruh.pk }}/" class="btn btn-ghost">Bekor qilish</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

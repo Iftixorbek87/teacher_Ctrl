@@ -1,0 +1,200 @@
+{% extends 'base/base.html' %}
+{% block title %}Bosh sahifa{% endblock %}
+
+{% block extra_css %}
+<style>
+.welcome {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 100%);
+    border-radius: var(--r);
+    padding: 1.75rem 2rem;
+    color: var(--parchment);
+    border-bottom: 3px solid var(--gold);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+.welcome::after {
+    content: '✦';
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 6rem;
+    opacity: .04;
+    color: var(--gold-light);
+}
+.welcome-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+.welcome-sub  { opacity: .6; font-size: .87rem; margin-top: .15rem; }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.stat {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    border-top: 3px solid var(--gold);
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s;
+}
+.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-n {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1;
+}
+.stat-l {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--muted);
+    margin-top: .35rem;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--ink);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+.section-title::before { content: '◆'; color: var(--gold); font-size: .7rem; }
+
+.patok-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1.25rem;
+}
+
+.patok-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    transition: all .2s;
+}
+.patok-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--gold);
+}
+.patok-card-top {
+    background: var(--ink);
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+.patok-icon {
+    width: 34px; height: 34px;
+    background: rgba(184,135,42,.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.patok-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--parchment);
+    font-weight: 600;
+}
+.patok-card-body { padding: 1rem 1.25rem; }
+.patok-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: .82rem;
+    color: var(--muted);
+}
+.patok-desc {
+    font-size: .83rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: .5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome">
+    <div>
+        <div class="welcome-name">Xush kelibsiz, {{ user.get_full_name|default:user.username }}!</div>
+        <div class="welcome-sub">O'quvchilaringiz vazifalarini kuzatib boring</div>
+    </div>
+    <a href="/patoklar/create/" class="btn btn-gold">+ Yangi patok</a>
+</div>
+
+<div class="stats">
+    <div class="stat">
+        <div class="stat-n">{{ patoklar_soni }}</div>
+        <div class="stat-l">Patoklar</div>
+    </div>
+    <div class="stat">
+        <div class="stat-n">{{ jami_guruhlar }}</div>
+        <div class="stat-l">Guruhlar</div>
+    </div>
+    <div class="stat">
+        <div class="stat-n">{{ jami_talabalar }}</div>
+        <div class="stat-l">O'quvchilar</div>
+    </div>
+</div>
+
+<div class="section-head">
+    <div class="section-title">Mening patok­larim</div>
+    <a href="/patoklar/" class="btn btn-ghost btn-sm">Barchasini ko'rish</a>
+</div>
+
+{% if patoklar %}
+<div class="patok-grid">
+    {% for p in patoklar %}
+    <a href="/patoklar/{{ p.pk }}/" class="patok-card">
+        <div class="patok-card-top">
+            <div class="patok-icon">📦</div>
+            <div class="patok-name">{{ p.nomi }}</div>
+        </div>
+        <div class="patok-card-body">
+            <div class="patok-meta">
+                <span>📚 {{ p.guruhlar_soni }} guruh</span>
+                <span>👥 {{ p.talabalar_soni }} o'quvchi</span>
+            </div>
+            {% if p.tavsif %}<div class="patok-desc">{{ p.tavsif|truncatechars:70 }}</div>{% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="empty">
+        <div class="empty-icon">📦</div>
+        <div class="empty-title">Hali patok yaratilmagan</div>
+        <p style="margin-bottom:1rem;font-size:.87rem;">Birinchi patokni yarating va guruhlar qo'shing</p>
+        <a href="/patoklar/create/" class="btn btn-primary">Patok yaratish</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

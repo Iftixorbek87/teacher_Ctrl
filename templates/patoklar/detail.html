@@ -1,0 +1,127 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ patok.nomi }}{% endblock %}
+{% block breadcrumb %}
+<li><a href="/">Bosh sahifa</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/patoklar/">Patoklar</a></li>
+<li><span class="sep">›</span></li>
+<li><span class="current">{{ patok.nomi }}</span></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.guruh-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.1rem;
+}
+.guruh-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all .2s;
+    text-decoration: none;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+}
+.guruh-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--gold); }
+.guruh-card-top {
+    background: var(--ink-light);
+    padding: .9rem 1.1rem;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+.guruh-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: .95rem;
+    color: var(--parchment);
+    font-weight: 600;
+    flex: 1;
+}
+.guruh-card-body { padding: .9rem 1.1rem; flex: 1; }
+.guruh-card-meta { font-size: .82rem; color: var(--muted); margin-bottom: .75rem; }
+.guruh-card-actions { display: flex; gap: .4rem; margin-top: auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ph">
+    <div>
+        <div class="ph-title">📦 {{ patok.nomi }}</div>
+        <div class="ph-sub">
+            {{ patok.guruhlar.count }} guruh &nbsp;·&nbsp; {{ patok.talabalar_soni }} o'quvchi
+            {% if patok.tavsif %} &nbsp;·&nbsp; {{ patok.tavsif }}{% endif %}
+        </div>
+    </div>
+    <div class="ph-actions">
+        <a href="/patoklar/{{ patok.pk }}/edit/" class="btn btn-ghost btn-sm">✏ Tahrirlash</a>
+        <a href="/patoklar/{{ patok.pk }}/delete/" class="btn btn-danger btn-sm">🗑 O'chirish</a>
+        <a href="/patoklar/" class="btn btn-outline btn-sm">← Patoklar</a>
+    </div>
+</div>
+
+<!-- Guruh qidirish + qo'shish -->
+<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);">
+        ◆ Guruhlar
+    </div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+        <form method="get" style="display:flex;">
+            <div class="search-wrap">
+                <input class="search-input" name="q" value="{{ q }}" placeholder="Guruh nomini qidiring…" style="min-width:180px;">
+                {% if q %}<button type="button" class="search-clear" onclick="location.href='/patoklar/{{ patok.pk }}/'">✕</button>{% endif %}
+                <button class="search-btn" type="submit">🔍</button>
+            </div>
+        </form>
+        <a href="/guruhlar/create/{{ patok.pk }}/" class="btn btn-gold btn-sm">+ Yangi guruh</a>
+    </div>
+</div>
+
+{% if q %}
+<p style="font-size:.84rem;color:var(--muted);margin-bottom:1rem;">
+    «<strong>{{ q }}</strong>» bo'yicha {{ guruhlar.count }} ta natija
+    — <a href="/patoklar/{{ patok.pk }}/" style="color:var(--gold);">tozalash</a>
+</p>
+{% endif %}
+
+{% if guruhlar %}
+<div class="guruh-grid">
+    {% for g in guruhlar %}
+    <div class="guruh-card">
+        <div class="guruh-card-top">
+            <span style="font-size:1rem;">📚</span>
+            <span class="guruh-card-name">{{ g.nomi }}</span>
+            <span class="badge badge-ink">{{ g.talabalar_soni }}</span>
+        </div>
+        <div class="guruh-card-body">
+            <div class="guruh-card-meta">
+                👥 {{ g.talabalar_soni }} o'quvchi &nbsp;·&nbsp; 📋 {{ g.jami_vazifalar }} vazifa
+                {% if g.tavsif %}<br><em style="font-size:.8rem;">{{ g.tavsif|truncatechars:55 }}</em>{% endif %}
+            </div>
+            <div class="guruh-card-actions">
+                <a href="/guruhlar/{{ g.pk }}/" class="btn btn-primary btn-xs">Ko'rish</a>
+                <a href="/guruhlar/{{ g.pk }}/edit/" class="btn btn-ghost btn-xs">Tahrirlash</a>
+                <a href="/guruhlar/{{ g.pk }}/delete/" class="btn btn-danger btn-xs">O'chirish</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="empty">
+        <div class="empty-icon">📚</div>
+        <div class="empty-title">{% if q %}Guruh topilmadi{% else %}Hali guruh yaratilmagan{% endif %}</div>
+        {% if not q %}
+        <p style="font-size:.86rem;margin-bottom:.75rem;">Bu patokka birinchi guruhni qo'shing</p>
+        <a href="/guruhlar/create/{{ patok.pk }}/" class="btn btn-primary">Guruh yaratish</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

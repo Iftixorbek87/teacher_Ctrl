@@ -1,0 +1,18 @@
+{% extends 'base/base.html' %}
+{% block title %}O'quvchini o'chirish{% endblock %}
+{% block content %}
+<div style="max-width:440px;margin:0 auto;">
+    <div class="card">
+        <div class="card-head" style="background:var(--red);border-color:#c04050;">⚠ O'quvchini o'chirish</div>
+        <div class="card-body" style="text-align:center;padding:2rem;">
+            <p style="margin-bottom:.5rem;">Ushbu o'quvchini o'chirishni tasdiqlaysizmi?</p>
+            <p style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:1.5rem;">{{ talaba.ism_familya }}</p>
+            <form method="post" style="display:flex;gap:.6rem;justify-content:center;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Ha, o'chirish</button>
+                <a href="/guruhlar/{{ talaba.guruh.pk }}/" class="btn btn-ghost">Bekor qilish</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

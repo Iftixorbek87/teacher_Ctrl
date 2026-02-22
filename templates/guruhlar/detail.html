@@ -1,0 +1,709 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ guruh.nomi }}{% endblock %}
+{% block breadcrumb %}
+<li><a href="/">Bosh sahifa</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/patoklar/">Patoklar</a></li>
+<li><span class="sep">›</span></li>
+<li><a href="/patoklar/{{ guruh.patok.pk }}/">{{ guruh.patok.nomi }}</a></li>
+<li><span class="sep">›</span></li>
+<li><span class="current">{{ guruh.nomi }}</span></li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ─── Hero ─── */
+.guruh-hero {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 100%);
+    border-radius: var(--r);
+    padding: 1.25rem 1.5rem;
+    color: var(--parchment);
+    border-bottom: 3px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+.gh-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+.gh-meta  { font-size: .83rem; opacity: .65; margin-top: .15rem; }
+.gh-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+/* ─── Toolbar ─── */
+.tbl-toolbar {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-bottom: none;
+    border-radius: var(--r) var(--r) 0 0;
+    padding: .7rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+.tbl-info { font-size: .83rem; color: var(--muted); }
+.tbl-info strong { color: var(--ink); }
+
+/* ─── Vazifalar soni edit ─── */
+.vazifa-count-form {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    background: var(--gold-pale);
+    border: 1.5px solid var(--gold);
+    border-radius: var(--r);
+    padding: .25rem .5rem .25rem .75rem;
+}
+.vazifa-count-label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: #7a5a1a;
+    white-space: nowrap;
+}
+.vazifa-count-inp {
+    width: 60px;
+    padding: .2rem .4rem;
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--cream);
+    text-align: center;
+}
+.vazifa-count-inp:focus { outline: none; border-color: var(--ink); }
+.vazifa-count-btn {
+    background: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: .22rem .65rem;
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+}
+.vazifa-count-btn:hover { background: #9a6e1e; }
+
+/* ─── Table wrapper ─── */
+.tbl-wrap {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: 0 0 var(--r) var(--r);
+    overflow: auto;
+    max-height: 72vh;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ─── Table ─── */
+.jtable {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    min-width: 700px;
+}
+
+/* Sticky header */
+.jtable thead th {
+    position: sticky;
+    top: 0;
+    background: var(--ink);
+    color: var(--parchment);
+    font-weight: 700;
+    font-size: .72rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: .7rem .3rem;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,.08);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* Sticky name column */
+.jtable thead th.col-name,
+.jtable tbody td.col-name {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    text-align: left;
+}
+.jtable thead th.col-name {
+    z-index: 15;
+    width: 230px;
+    min-width: 230px;
+    border-right: 2px solid var(--gold);
+    text-align: left;
+    padding-left: .75rem;
+}
+.jtable tbody td.col-name {
+    background: var(--parchment);
+    border-right: 2px solid var(--rule);
+    padding: .45rem .6rem;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* Sticky progress column */
+.jtable thead th.col-natija {
+    position: sticky;
+    right: 0;
+    z-index: 15;
+    background: var(--ink-light);
+    border-left: 2px solid var(--gold);
+    width: 110px;
+    min-width: 110px;
+}
+.jtable tbody td.col-natija {
+    position: sticky;
+    right: 0;
+    background: var(--parchment);
+    border-left: 2px solid var(--rule);
+    padding: .4rem .65rem;
+    z-index: 4;
+    min-width: 110px;
+}
+
+/* Rows */
+.jtable tbody tr {
+    border-bottom: 1px solid var(--rule);
+    transition: background .12s;
+}
+.jtable tbody tr:hover { background: rgba(184,135,42,.05); }
+.jtable tbody tr.bitirdi { background: rgba(42,107,71,.05); }
+.jtable tbody tr.bitirdi td.col-name { background: #eef7f2 !important; }
+
+/* Task cells — bigger */
+.jtable td.tc {
+    text-align: center;
+    padding: .32rem .22rem;
+    border-right: 1px solid rgba(221,213,192,.4);
+    width: 38px;
+    min-width: 38px;
+}
+.jtable thead th.col-task {
+    width: 38px;
+    min-width: 38px;
+    font-size: .75rem;
+    padding: .6rem .2rem;
+}
+
+/* Checkbox — bigger & clearer */
+.vcb {
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #b0a898;
+    border-radius: 5px;
+    background: #fff;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    transition: all .13s;
+    flex-shrink: 0;
+}
+.vcb:hover { border-color: var(--gold); background: var(--gold-pale); }
+.vcb:checked {
+    background: var(--green);
+    border-color: var(--green);
+    box-shadow: 0 1px 4px rgba(42,107,71,.35);
+}
+.vcb:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+}
+.vcb:disabled { opacity: .45; cursor: wait; }
+
+/* Name cell */
+.name-inner { display: flex; align-items: center; gap: .35rem; }
+.name-text   { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .85rem; }
+.name-acts   { display: none; gap: .18rem; flex-shrink: 0; }
+.jtable tbody tr:hover .name-acts { display: flex; }
+.ib {
+    background: none; border: none; cursor: pointer;
+    font-size: .78rem; padding: .1rem .28rem;
+    border-radius: 3px; color: var(--muted);
+    text-decoration: none; transition: all .12s;
+    display: inline-flex; align-items: center;
+    line-height: 1;
+}
+.ib:hover         { background: var(--rule); color: var(--ink); }
+.ib.del:hover     { background: #fde8ea; color: var(--red); }
+
+/* Profile button */
+.btn-profil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--ink-light);
+    color: var(--parchment);
+    font-size: .7rem;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
+    transition: all .15s;
+    text-decoration: none;
+    line-height: 1;
+}
+.btn-profil:hover { background: var(--gold); transform: scale(1.1); }
+
+/* Progress cell content */
+.prog-count {
+    font-weight: 700;
+    font-size: .82rem;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: 3px;
+    white-space: nowrap;
+}
+.mini-bar { height: 5px; background: var(--rule); border-radius: 10px; overflow: hidden; }
+.mini-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--gold), var(--green)); transition: width .35s; }
+.mini-fill.full { background: var(--green); }
+.grad-lbl {
+    display: none;
+    text-align: center;
+    font-size: .65rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+.grad-lbl.show { display: block; }
+
+/* ─── PROFIL MODAL ─── */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(28,43,58,.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(3px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+    background: var(--cream);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    overflow: hidden;
+    animation: modalIn .2s ease;
+}
+@keyframes modalIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-head {
+    background: var(--ink);
+    border-bottom: 2px solid var(--gold);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+.modal-head-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--parchment);
+}
+.modal-close {
+    background: rgba(255,255,255,.12);
+    border: none;
+    color: var(--parchment);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+    flex-shrink: 0;
+}
+.modal-close:hover { background: rgba(255,255,255,.22); }
+
+.modal-body { padding: 1.5rem; }
+
+.profil-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ink-light), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 1.25rem;
+    border: 3px solid var(--gold);
+    color: white;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+}
+
+.profil-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: .25rem;
+}
+.profil-guruh {
+    text-align: center;
+    font-size: .8rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+}
+
+.profil-info { display: flex; flex-direction: column; gap: .65rem; }
+.profil-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem .85rem;
+    background: var(--parchment);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+}
+.profil-icon { font-size: 1.1rem; flex-shrink: 0; width: 22px; text-align: center; }
+.profil-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.profil-val {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--ink);
+    word-break: break-all;
+}
+.profil-val a { color: var(--ink); text-decoration: none; }
+.profil-val a:hover { color: var(--gold); text-decoration: underline; }
+.profil-val.empty { color: var(--muted); font-weight: 400; font-style: italic; }
+
+.profil-progress {
+    margin-top: 1rem;
+    padding: .75rem .85rem;
+    background: var(--parchment);
+    border: 1px solid var(--rule);
+    border-radius: var(--r);
+}
+.profil-progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .4rem;
+}
+.profil-progress-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.profil-progress-val { font-size: .88rem; font-weight: 700; color: var(--ink); }
+.profil-bar-wrap { height: 8px; background: var(--rule); border-radius: 10px; overflow: hidden; }
+.profil-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--gold), var(--green)); transition: width .5s; }
+.profil-bar-fill.full { background: var(--green); }
+
+.modal-foot {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="guruh-hero">
+    <div>
+        <div class="gh-title">{{ guruh.nomi }}</div>
+        <div class="gh-meta">
+            📦 {{ guruh.patok.nomi }} &nbsp;·&nbsp;
+            👥 {{ guruh.talabalar.count }} o'quvchi &nbsp;·&nbsp;
+            📋 {{ jami }} vazifa
+        </div>
+    </div>
+    <div class="gh-actions">
+        <a href="/talabalar/add/{{ guruh.pk }}/" class="btn btn-gold btn-sm">+ O'quvchi qo'shish</a>
+        <a href="/guruhlar/{{ guruh.pk }}/edit/" class="btn btn-ghost btn-sm" style="color:rgba(248,244,236,.8);border-color:rgba(255,255,255,.2);">Tahrirlash</a>
+        <a href="/patoklar/{{ guruh.patok.pk }}/" class="btn btn-sm" style="background:rgba(255,255,255,.08);color:rgba(248,244,236,.7);">← Patok</a>
+    </div>
+</div>
+
+{% if talabalar or q %}
+
+<div class="tbl-toolbar">
+    <div class="tbl-info">
+        Jami <strong>{{ guruh.talabalar.count }}</strong> o'quvchi &nbsp;|&nbsp;
+        Har biri <strong>{{ jami }}</strong> ta vazifa bajarishi kerak
+    </div>
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+
+        <!-- Vazifalar sonini o'zgartirish -->
+        <form method="post" action="/guruhlar/{{ guruh.pk }}/vazifa-soni/" class="vazifa-count-form">
+            {% csrf_token %}
+            <span class="vazifa-count-label">Vazifalar soni:</span>
+            <input type="number" name="jami_vazifalar" value="{{ jami }}" min="1" max="500" class="vazifa-count-inp">
+            <button type="submit" class="vazifa-count-btn">Saqlash</button>
+        </form>
+
+        <!-- O'quvchi qidirish -->
+        <form method="get" style="display:flex;">
+            <div class="search-wrap">
+                <input class="search-input" name="q" value="{{ q }}" placeholder="Ism-familya bo'yicha qidiring…" style="min-width:190px;">
+                {% if q %}<button type="button" class="search-clear" onclick="location.href='/guruhlar/{{ guruh.pk }}/'">✕</button>{% endif %}
+                <button class="search-btn" type="submit">🔍</button>
+            </div>
+        </form>
+
+        <span style="font-size:.75rem;color:var(--muted);">✓ bosib belgilang</span>
+    </div>
+</div>
+
+<div class="tbl-wrap">
+    <table class="jtable" id="jt">
+        <thead>
+            <tr>
+                <th class="col-name">F.I.SH</th>
+                {% for i in task_range %}<th class="col-task">{{ i }}</th>{% endfor %}
+                <th class="col-natija">NATIJA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in talabalar %}
+            {% with bn=t.bajarilgan_soni %}
+            <tr class="{% if t.bitirdimi %}bitirdi{% endif %}" data-id="{{ t.pk }}">
+                <td class="col-name">
+                    <div class="name-inner">
+                        <!-- Profil tugmasi -->
+                        <button class="btn-profil profil-btn"
+                                title="Profil ko'rish"
+                                data-id="{{ t.pk }}"
+                                data-ism="{{ t.ism_familya }}"
+                                data-tel="{{ t.telefon }}"
+                                data-tg="{{ t.telegram }}"
+                                data-bn="{{ bn }}"
+                                data-jami="{{ jami }}"
+                                data-foiz="{{ t.foiz }}"
+                                data-guruh="{{ guruh.nomi }}">👤</button>
+
+                        <span class="name-text">
+                            {% if t.bitirdimi %}🏆 {% endif %}{{ t.ism_familya }}
+                        </span>
+                        <span class="name-acts">
+                            <a href="/talabalar/{{ t.pk }}/edit/" class="ib" title="Tahrirlash">✏</a>
+                            <a href="/talabalar/{{ t.pk }}/delete/" class="ib del" title="O'chirish">🗑</a>
+                        </span>
+                    </div>
+                </td>
+                {% for v in t.vazifalar.all %}
+                <td class="tc">
+                    <input type="checkbox" class="vcb"
+                           data-tid="{{ t.pk }}"
+                           data-vn="{{ v.vazifa_raqam }}"
+                           {% if v.bajarildi %}checked{% endif %}>
+                </td>
+                {% endfor %}
+                <td class="col-natija">
+                    <div class="prog-count" id="cnt-{{ t.pk }}">{{ bn }}/{{ jami }}</div>
+                    <div class="mini-bar">
+                        <div class="mini-fill {% if t.bitirdimi %}full{% endif %}"
+                             id="bar-{{ t.pk }}"
+                             style="width:{{ t.foiz }}%"></div>
+                    </div>
+                    <div class="grad-lbl {% if t.bitirdimi %}show{% endif %}" id="grd-{{ t.pk }}">✓ Bitirdi</div>
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if q %}
+<p style="font-size:.82rem;color:var(--muted);margin-top:.6rem;">
+    «{{ q }}» bo'yicha {{ talabalar.count }} ta natija —
+    <a href="/guruhlar/{{ guruh.pk }}/" style="color:var(--gold);">tozalash</a>
+</p>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="empty">
+        <div class="empty-icon">👥</div>
+        <div class="empty-title">Guruhda o'quvchilar yo'q</div>
+        <p style="font-size:.86rem;margin-bottom:.75rem;">Birinchi o'quvchini qo'shing</p>
+        <a href="/talabalar/add/{{ guruh.pk }}/" class="btn btn-primary">O'quvchi qo'shish</a>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- ═══ PROFIL MODALI ═══ -->
+<div class="modal-overlay" id="profilModal" onclick="if(event.target===this)modalYop()">
+    <div class="modal-box">
+        <div class="modal-head">
+            <span class="modal-head-title">👤 O'quvchi profili</span>
+            <button class="modal-close" onclick="modalYop()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="profil-avatar" id="m-avatar">A</div>
+            <div class="profil-name"   id="m-name">—</div>
+            <div class="profil-guruh"  id="m-guruh">—</div>
+            <div class="profil-info">
+                <div class="profil-row">
+                    <span class="profil-icon">📞</span>
+                    <div>
+                        <div class="profil-label">Telefon</div>
+                        <div class="profil-val" id="m-tel">—</div>
+                    </div>
+                </div>
+                <div class="profil-row">
+                    <span class="profil-icon">✈️</span>
+                    <div>
+                        <div class="profil-label">Telegram</div>
+                        <div class="profil-val" id="m-tg">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="profil-progress">
+                <div class="profil-progress-top">
+                    <span class="profil-progress-label">Vazifalar jarayoni</span>
+                    <span class="profil-progress-val" id="m-count">0/75</span>
+                </div>
+                <div class="profil-bar-wrap">
+                    <div class="profil-bar-fill" id="m-bar" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <a id="m-edit-link" href="#" class="btn btn-outline btn-sm">✏ Tahrirlash</a>
+            <button class="btn btn-ghost btn-sm" onclick="modalYop()">Yopish</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const TOGGLE_URL = '/talabalar/vazifa-toggle/';
+const CSRF = '{{ csrf_token }}';
+const JAMI = {{ jami }};
+
+/* ─── Checkbox toggle ─── */
+document.querySelectorAll('.vcb').forEach(cb => {
+    cb.addEventListener('change', async function () {
+        const tid = this.dataset.tid;
+        const vn  = parseInt(this.dataset.vn);
+        this.disabled = true;
+
+        try {
+            const r = await fetch(TOGGLE_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
+                body: JSON.stringify({talaba_id: tid, vazifa_raqam: vn})
+            });
+            const d = await r.json();
+            if (!d.success) throw new Error(d.error);
+
+            document.getElementById('cnt-' + tid).textContent = d.bajarilgan + '/' + JAMI;
+            const bar  = document.getElementById('bar-' + tid);
+            const row  = document.querySelector(`tr[data-id="${tid}"]`);
+            const grd  = document.getElementById('grd-' + tid);
+            const nameText = row.querySelector('.name-text');
+
+            bar.style.width = d.foiz + '%';
+
+            if (d.bitirdi) {
+                bar.classList.add('full');
+                grd.classList.add('show');
+                row.classList.add('bitirdi');
+                if (!nameText.textContent.includes('🏆'))
+                    nameText.textContent = '🏆 ' + nameText.textContent.trim();
+                showToast('🏆 Barakalla! Barcha vazifalar bajarildi!', 'ok');
+            } else {
+                bar.classList.remove('full');
+                grd.classList.remove('show');
+                row.classList.remove('bitirdi');
+                nameText.textContent = nameText.textContent.replace('🏆 ', '').trim();
+                showToast(d.bajarildi ? '✓ Vazifa belgilandi' : 'Vazifa olib tashlandi');
+            }
+        } catch (e) {
+            this.checked = !this.checked;
+            showToast('Xatolik yuz berdi');
+        } finally {
+            this.disabled = false;
+        }
+    });
+});
+
+/* ─── Profil modal (event delegation) ─── */
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.profil-btn');
+    if (!btn) return;
+    const d = btn.dataset;
+    profilKor(d.id, d.ism, d.tel, d.tg,
+              parseInt(d.bn), parseInt(d.jami), parseFloat(d.foiz), d.guruh);
+});
+
+function profilKor(id, ism, tel, tg, bajarilgan, jami, foiz, guruhNomi) {
+    // Avatar: initials
+    const words = ism.trim().split(' ');
+    const initials = words.map(s => s[0] || '').join('').slice(0,2).toUpperCase();
+    document.getElementById('m-avatar').textContent = initials || '?';
+    document.getElementById('m-name').textContent   = ism;
+    document.getElementById('m-guruh').textContent  = guruhNomi;
+
+    // Telefon
+    const telEl = document.getElementById('m-tel');
+    if (tel) {
+        telEl.innerHTML = `<a href="tel:${tel}">${tel}</a>`;
+        telEl.className = 'profil-val';
+    } else {
+        telEl.textContent = 'Kiritilmagan';
+        telEl.className   = 'profil-val empty';
+    }
+
+    // Telegram
+    const tgEl = document.getElementById('m-tg');
+    if (tg) {
+        const uname = tg.startsWith('@') ? tg : '@' + tg;
+        const link  = 'https://t.me/' + tg.replace('@','');
+        tgEl.innerHTML = `<a href="${link}" target="_blank">${uname}</a>`;
+        tgEl.className = 'profil-val';
+    } else {
+        tgEl.textContent = 'Kiritilmagan';
+        tgEl.className   = 'profil-val empty';
+    }
+
+    // Progress
+    document.getElementById('m-count').textContent = bajarilgan + '/' + jami;
+    const bar = document.getElementById('m-bar');
+    bar.style.width = foiz + '%';
+    bar.className   = 'profil-bar-fill' + (bajarilgan >= jami ? ' full' : '');
+
+    // Edit link
+    document.getElementById('m-edit-link').href = `/talabalar/${id}/edit/`;
+
+    document.getElementById('profilModal').classList.add('open');
+}
+
+function modalYop() {
+    document.getElementById('profilModal').classList.remove('open');
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') modalYop(); });
+</script>
+{% endblock %}

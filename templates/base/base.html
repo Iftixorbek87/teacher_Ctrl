@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}O'qituvchi Portali{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink:        #1c2b3a;
+            --ink-light:  #2e4560;
+            --gold:       #b8872a;
+            --gold-light: #d4a84b;
+            --gold-pale:  #fdf6e8;
+            --green:      #2a6b47;
+            --green-pale: #eaf4ef;
+            --red:        #8b2230;
+            --parchment:  #f8f4ec;
+            --cream:      #fffef9;
+            --rule:       #ddd5c0;
+            --muted:      #6b6560;
+            --shadow-sm:  0 2px 8px rgba(28,43,58,.07);
+            --shadow-md:  0 6px 24px rgba(28,43,58,.10);
+            --shadow-lg:  0 12px 40px rgba(28,43,58,.14);
+            --r:          6px;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--parchment);
+            color: var(--ink);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* ═══ TOPBAR ═══ */
+        .topbar {
+            background: var(--ink);
+            border-bottom: 3px solid var(--gold);
+            height: 58px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            gap: 1rem;
+            position: sticky; top: 0; z-index: 200;
+            box-shadow: 0 2px 12px rgba(0,0,0,.2);
+        }
+
+        .topbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--parchment);
+            text-decoration: none;
+            white-space: nowrap;
+            margin-right: 0.5rem;
+        }
+        .topbar-brand em { color: var(--gold-light); font-style: normal; }
+
+        .topbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,.15); }
+
+        /* ═══ BREADCRUMB ═══ */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            list-style: none;
+            flex: 1;
+            overflow: hidden;
+        }
+        .breadcrumb li { display: flex; align-items: center; gap: 0.25rem; }
+
+        /* Each link = pill chip */
+        .breadcrumb a {
+            display: inline-flex;
+            align-items: center;
+            color: rgba(248,244,236,.75);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+            white-space: nowrap;
+            padding: 0.22rem 0.65rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.1);
+            transition: all .18s;
+        }
+        .breadcrumb a:hover {
+            color: var(--gold-light);
+            background: rgba(184,135,42,.18);
+            border-color: rgba(184,135,42,.4);
+        }
+
+        /* Separator arrow */
+        .breadcrumb .sep {
+            color: rgba(255,255,255,.2);
+            font-size: 0.65rem;
+            flex-shrink: 0;
+            margin: 0 0.05rem;
+        }
+
+        /* Active / current page chip */
+        .breadcrumb .current {
+            display: inline-flex;
+            align-items: center;
+            color: var(--ink);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            padding: 0.22rem 0.75rem;
+            border-radius: 20px;
+            background: var(--gold-light);
+            border: 1px solid var(--gold);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .topbar-user {
+            color: rgba(248,244,236,.7);
+            font-size: 0.82rem;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid rgba(184,135,42,.35);
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .btn-topbar {
+            background: var(--gold);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: .05em;
+            padding: 0.3rem 0.85rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+        .btn-topbar:hover { background: var(--gold-light); }
+
+        /* ═══ LAYOUT ═══ */
+        .page {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.75rem 1.5rem 3rem;
+        }
+
+        /* ═══ PAGE HEADER ═══ */
+        .ph {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--rule);
+            flex-wrap: wrap;
+        }
+        .ph-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+        .ph-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .ph-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+
+        /* ═══ BUTTONS ═══ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: .5rem 1.1rem;
+            border-radius: var(--r);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all .18s;
+            white-space: nowrap;
+            line-height: 1.4;
+        }
+        .btn-primary   { background: var(--ink);   color: var(--parchment); }
+        .btn-primary:hover   { background: var(--ink-light); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .btn-gold      { background: var(--gold);  color: #fff; }
+        .btn-gold:hover      { background: var(--gold-light); }
+        .btn-success   { background: var(--green); color: #fff; }
+        .btn-success:hover   { background: #358759; }
+        .btn-danger    { background: var(--red);   color: #fff; }
+        .btn-danger:hover    { background: #a02a3a; }
+        .btn-outline   { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+        .btn-outline:hover   { background: var(--ink); color: var(--parchment); }
+        .btn-ghost     { background: transparent; color: var(--muted); border: 1.5px solid var(--rule); }
+        .btn-ghost:hover     { border-color: var(--ink); color: var(--ink); }
+        .btn-sm        { padding: .3rem .75rem; font-size: 0.8rem; }
+        .btn-xs        { padding: .18rem .5rem; font-size: 0.73rem; }
+
+        /* ═══ CARDS ═══ */
+        .card {
+            background: var(--cream);
+            border: 1px solid var(--rule);
+            border-radius: var(--r);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        .card-head {
+            background: var(--ink);
+            color: var(--parchment);
+            padding: .85rem 1.25rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .card-body { padding: 1.25rem; }
+
+        /* ═══ SEARCH BOX ═══ */
+        .search-wrap {
+            display: flex;
+            gap: 0;
+            border: 1.5px solid var(--rule);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: var(--cream);
+            box-shadow: var(--shadow-sm);
+        }
+        .search-wrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,135,42,.12); }
+        .search-input {
+            flex: 1;
+            padding: .55rem 1rem;
+            border: none;
+            background: transparent;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+            outline: none;
+        }
+        .search-btn {
+            background: var(--ink);
+            border: none;
+            color: var(--parchment);
+            padding: 0 1rem;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background .15s;
+        }
+        .search-btn:hover { background: var(--ink-light); }
+        .search-clear {
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 0 0.7rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .search-clear:hover { color: var(--red); }
+
+        /* ═══ FORM ═══ */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-label {
+            display: block;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            color: var(--ink-light);
+            margin-bottom: .35rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: .65rem .9rem;
+            border: 1.5px solid var(--rule);
+            border-radius: var(--r);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: .95rem;
+            background: var(--cream);
+            color: var(--ink);
+            transition: border-color .15s;
+        }
+        .form-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,135,42,.1); }
+
+        /* ═══ ALERTS ═══ */
+        .alerts { margin-bottom: 1.25rem; }
+        .alert {
+            padding: .75rem 1rem;
+            border-radius: var(--r);
+            margin-bottom: .5rem;
+            font-size: .875rem;
+            font-weight: 600;
+            border-left: 3px solid;
+        }
+        .alert-success { background: var(--green-pale); color: var(--green); border-color: var(--green); }
+        .alert-error   { background: #fdf0f2; color: var(--red);   border-color: var(--red); }
+        .alert-warning { background: var(--gold-pale); color: #7a5a1a; border-color: var(--gold); }
+
+        /* ═══ PROGRESS ═══ */
+        .pbar-wrap { height: 6px; background: var(--rule); border-radius: 10px; overflow: hidden; }
+        .pbar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--gold), var(--green)); transition: width .4s; }
+        .pbar-fill.full { background: var(--green); }
+
+        /* ═══ BADGE ═══ */
+        .badge {
+            display: inline-block;
+            padding: .1rem .55rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+        }
+        .badge-green  { background: var(--green-pale); color: var(--green); }
+        .badge-gold   { background: var(--gold-pale);  color: #7a5a1a; }
+        .badge-ink    { background: #e8eef4;            color: var(--ink); }
+
+        /* ═══ TOAST ═══ */
+        .toast {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            background: var(--ink); color: var(--parchment);
+            padding: .65rem 1.2rem;
+            border-radius: var(--r);
+            border-left: 3px solid var(--gold);
+            font-size: .85rem; font-weight: 600;
+            z-index: 9999;
+            transform: translateY(80px); opacity: 0;
+            transition: all .3s ease;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.ok   { border-color: var(--green); }
+
+        /* ═══ EMPTY STATE ═══ */
+        .empty {
+            text-align: center;
+            padding: 3.5rem 2rem;
+            color: var(--muted);
+        }
+        .empty-icon { font-size: 2.5rem; opacity: .35; margin-bottom: .75rem; }
+        .empty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--ink);
+            margin-bottom: .4rem;
+        }
+
+        /* ═══ FOOTER ═══ */
+        .site-footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: .78rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--rule);
+            margin-top: 2rem;
+        }
+        .site-footer span { color: var(--gold); margin: 0 .4rem; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="topbar">
+    <a href="/" class="topbar-brand">✦ O'qituvchi <em>Portali</em></a>
+    <div class="topbar-sep"></div>
+    <ul class="breadcrumb">
+        {% block breadcrumb %}
+        <li><a href="/">Bosh sahifa</a></li>
+        {% endblock %}
+    </ul>
+    <div class="topbar-right">
+        <span class="topbar-user">👤 {{ user.get_full_name|default:user.username }}</span>
+        {% if user.is_staff %}
+        <a href="/admin/" class="btn-topbar" style="background:var(--ink-light);color:var(--gold-light);">Admin</a>
+        {% endif %}
+        <a href="/logout/" class="btn-topbar">Chiqish</a>
+    </div>
+</nav>
+{% endif %}
+
+<main class="page">
+    {% if messages %}
+    <div class="alerts">
+        {% for m in messages %}
+        <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <span>✦</span> O'qituvchi Portali — Vazifalar kuzatuvi tizimi <span>✦</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.className = 'toast', 2200);
+}
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+{% block title %}Guruhni o'chirish{% endblock %}
+{% block content %}
+<div style="max-width:440px;margin:0 auto;">
+    <div class="card">
+        <div class="card-head" style="background:var(--red);border-color:#c04050;">⚠ Guruhni o'chirish</div>
+        <div class="card-body" style="text-align:center;padding:2rem;">
+            <p style="margin-bottom:.5rem;">Ushbu guruhni o'chirishni tasdiqlaysizmi?</p>
+            <p style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;margin-bottom:.5rem;">«{{ guruh.nomi }}»</p>
+            <p style="color:var(--red);font-size:.84rem;margin-bottom:1.5rem;">
+                <strong>{{ guruh.talabalar_soni }}</strong> o'quvchi va ularning barcha vazifa ma'lumotlari o'chib ketadi!
+            </p>
+            <form method="post" style="display:flex;gap:.6rem;justify-content:center;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Ha, o'chirish</button>
+                <a href="/guruhlar/{{ guruh.pk }}/" class="btn btn-ghost">Bekor qilish</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
