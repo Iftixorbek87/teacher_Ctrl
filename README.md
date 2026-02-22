@@ -1,12 +1,19 @@
-# O'qituvchi Portali — v2
 
-## Yangi tuzilma: Patok → Guruh → O'quvchilar
+[//]: # (# O'qituvchi Portali — v2)
 
-```
-Patok (masalan: 2024-yil 1-patok)
-  └── Guruh (masalan: A-guruh, B-guruh)
-        └── O'quvchilar + Vazifalar jadval
-```
+[//]: # ()
+[//]: # (## Yangi tuzilma: Patok → Guruh → O'quvchilar)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # (Patok &#40;masalan: 2024-yil 1-patok&#41;)
+
+[//]: # (  └── Guruh &#40;masalan: A-guruh, B-guruh&#41;)
+
+[//]: # (        └── O'quvchilar + Vazifalar jadval)
+
+[//]: # (```)
 
 ## O'rnatish
 
@@ -22,7 +29,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Brauzerda: http://127.0.0.1:8000
+[//]: # (Brauzerda: http://127.0.0.1:8000)
 
 ## Xususiyatlar
 - ✅ Patok yaratish va boshqarish
@@ -34,3 +41,10 @@ Brauzerda: http://127.0.0.1:8000
 - ✅ 75 ta (yoki belgilangan) vazifa bajarilganda 🏆 nishon
 - ✅ Breadcrumb navigatsiya
 - ✅ Admin panel: /admin/
+
+
+[//]: # (# teacher_Ctrl)
+
+[//]: # (Teacher nazorati)
+
+[//]: # (>>>>>>> 2cd7605dba28d27bc3c47e1484a0b72ec690f134)
